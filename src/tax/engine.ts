@@ -36,13 +36,16 @@ export interface Params {
   severanceExemption: boolean
 }
 
+/** Expected inflation (IPC); the base scenario raises salaries by this amount. */
+const DEFAULT_INFLATION = 0.05
+
 export const DEFAULT_PARAMS: Params = {
   startMonthly: 10e6,
   firstYear: 2027,
   years: 10,
-  salaryGrowth: 0.15,
-  transitionRaise: 0.15,
-  inflation: 0.05,
+  salaryGrowth: DEFAULT_INFLATION,
+  transitionRaise: DEFAULT_INFLATION,
+  inflation: DEFAULT_INFLATION,
   uvtBase: 52_374,
   smlmvBase: 1_750_905,
   baseYear: 2026,

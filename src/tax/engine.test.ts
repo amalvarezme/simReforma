@@ -2,14 +2,24 @@ import { describe, expect, it } from 'vitest'
 import { DEFAULT_PARAMS, project, simulateYear, transitionCurve, zoneOf, type Params } from './engine'
 
 const M = 1e6
+// Reference model: 15% raises, independent of the base scenario defaults.
 const noBenefits: Params = {
   ...DEFAULT_PARAMS,
+  salaryGrowth: 0.15,
+  transitionRaise: 0.15,
   dependents: 0,
   housingInterestMonthly: 0,
   prepaidHealthMonthly: 0,
   voluntarySavingsMonthly: 0,
   severanceExemption: false,
 }
+
+describe('DEFAULT_PARAMS', () => {
+  it('raises salaries by inflation (IPC) in the base scenario', () => {
+    expect(DEFAULT_PARAMS.transitionRaise).toBe(DEFAULT_PARAMS.inflation)
+    expect(DEFAULT_PARAMS.salaryGrowth).toBe(DEFAULT_PARAMS.inflation)
+  })
+})
 
 describe('simulateYear', () => {
   it('reproduces the reference model under the bill and the current law (no personal benefits)', () => {
@@ -68,6 +78,13 @@ describe('transitionCurve', () => {
     expect(transitionCurve({ ...noBenefits, startMonthly: 20 * M }).breakevenPct).toBe(8.5)
     expect(transitionCurve({ ...noBenefits, startMonthly: 30 * M }).breakevenPct).toBe(8)
   })
+
+  it('reports 0 when any raise already stays below 1:1 (no tax to absorb it)', () => {
+    const result = transitionCurve({ ...noBenefits, startMonthly: 3 * M })
+    expect(result.points[0].taxPerPeso).toBe(0)
+    expect(result.breakevenPct).toBe(0)
+    expect(result.greenFromPct).toBe(0)
+  })
 })
 
 describe('zoneOf', () => {
@@ -78,13 +95,6 @@ describe('zoneOf', () => {
     expect(zoneOf(rows[1].taxPerPeso)).toBe('gain')
   })
 
-
-  it('reports 0 when any raise already stays below 1:1 (no tax to absorb it)', () => {
-    const result = transitionCurve({ ...noBenefits, startMonthly: 3 * M })
-    expect(result.points[0].taxPerPeso).toBe(0)
-    expect(result.breakevenPct).toBe(0)
-    expect(result.greenFromPct).toBe(0)
-  })
   it('classifies the equilibrium band between $0.90 and $1.10', () => {
     expect(zoneOf(0.89)).toBe('gain')
     expect(zoneOf(1)).toBe('balance')

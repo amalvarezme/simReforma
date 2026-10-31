@@ -46,14 +46,14 @@ export function ParamPanel({ params: p, baselineMonthly, update, onPreset, onRes
           hint={`Fija el salario de ${p.firstYear - 1} (ley vigente) en ${money(baselineMonthly)}: salario inicial ÷ (1 + aumento). Por eso la curva del punto de equilibrio se recalcula al moverlo`}
           onChange={(v) => update('transitionRaise', v)} />
         <ParamSlider label="Aumento salarial anual" value={p.salaryGrowth} min={0} max={0.25} step={0.005}
-          format={pct} onChange={(v) => update('salaryGrowth', v)} />
+          format={pct} hint="Escenario base: igual a la inflación (IPC)" onChange={(v) => update('salaryGrowth', v)} />
         <ParamSlider label="Años proyectados" value={p.years} min={3} max={20} step={1}
           format={(v) => `${v} años`} onChange={(v) => update('years', v)} />
       </section>
 
       <section>
         <h3>Entorno</h3>
-        <ParamSlider label="Inflación (crecimiento de UVT y SMLMV)" value={p.inflation} min={0.02} max={0.12}
+        <ParamSlider label="Inflación, IPC (crecimiento de UVT y SMLMV)" value={p.inflation} min={0.02} max={0.12}
           step={0.005} format={pct} onChange={(v) => update('inflation', v)} />
         <div className="toggle-row" role="radiogroup" aria-label="Régimen de salud">
           <span className="param-label">Régimen de salud</span>
