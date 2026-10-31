@@ -99,7 +99,12 @@ export function SimulatorPage() {
       </div>
 
       <footer className="credits">
-        <span>Simulador desarrollado con agentes de IA</span>
+        <div className="credits-text">
+          <span>Simulador desarrollado con agentes de IA</span>
+          <a href="https://lia.manizales.unal.edu.co/" target="_blank" rel="noopener noreferrer">
+            lia.manizales.unal.edu.co
+          </a>
+        </div>
         <img src={`${import.meta.env.BASE_URL}lia-unal.png`} alt="Laboratorio de Inteligencia Artificial, UNAL"
           width={64} height={64} />
       </footer>
