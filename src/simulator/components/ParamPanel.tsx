@@ -3,6 +3,8 @@ import { ParamSlider } from './ParamSlider'
 
 interface ParamPanelProps {
   params: Params
+  /** Previous-year salary under the current law, derived from the start salary and the transition raise. */
+  baselineMonthly: number
   update: <K extends keyof Params>(key: K, value: Params[K]) => void
   onPreset: (startMonthly: number) => void
   onReset: () => void
@@ -12,7 +14,7 @@ const pct = (v: number) => `${(v * 100).toLocaleString('es-CO', { maximumFractio
 const money = (v: number) => `$${(v / 1e6).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M`
 const PRESETS = [10e6, 20e6, 30e6]
 
-export function ParamPanel({ params: p, update, onPreset, onReset }: ParamPanelProps) {
+export function ParamPanel({ params: p, baselineMonthly, update, onPreset, onReset }: ParamPanelProps) {
   return (
     <aside className="panel">
       <section>
@@ -40,7 +42,8 @@ export function ParamPanel({ params: p, update, onPreset, onReset }: ParamPanelP
           format={money} hint="Asignación básica + gastos de representación"
           onChange={(v) => update('startMonthly', v)} />
         <ParamSlider label={`Aumento en ${p.firstYear} (año de transición)`} value={p.transitionRaise} min={0} max={0.25}
-          step={0.005} format={pct} hint="Aumento frente al año anterior, que todavía usa la ley vigente"
+          step={0.005} format={pct}
+          hint={`Fija el salario de ${p.firstYear - 1} (ley vigente) en ${money(baselineMonthly)}: salario inicial ÷ (1 + aumento). Por eso la curva del punto de equilibrio se recalcula al moverlo`}
           onChange={(v) => update('transitionRaise', v)} />
         <ParamSlider label="Aumento salarial anual" value={p.salaryGrowth} min={0} max={0.25} step={0.005}
           format={pct} onChange={(v) => update('salaryGrowth', v)} />
@@ -60,7 +63,7 @@ export function ParamPanel({ params: p, update, onPreset, onReset }: ParamPanelP
             <button type="button" className={p.healthRegime === 'contributory' ? 'active' : ''}
               onClick={() => update('healthRegime', 'contributory')}>Contributivo</button>
           </div>
-          <span className="param-hint">Especial (p. ej. Unisalud): +2,5 pp. Contributivo: tabla del 5,5 % al 8 %.</span>
+          <span className="param-hint">Especial (p. ej. Unisalud): +1,5 pp con un IBC de 2 a 3 SMLMV y +2,5 pp por encima. Contributivo: tabla del 4 % al 8 %.</span>
         </div>
       </section>
 

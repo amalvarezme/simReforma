@@ -5,7 +5,7 @@ import { ParamPanel } from './components/ParamPanel'
 import { ProjectionChart } from './components/ProjectionChart'
 import { TransitionChart } from './components/TransitionChart'
 import { ZoneLegend } from './components/ZoneLegend'
-import { fmtM } from './format'
+import { fmtM, fmtRaise } from './format'
 import { useSimulation } from './useSimulation'
 
 export function SimulatorPage() {
@@ -24,7 +24,7 @@ export function SimulatorPage() {
       </header>
 
       <div className="layout">
-        <ParamPanel params={params} update={update} onReset={reset}
+        <ParamPanel params={params} baselineMonthly={transition.baselineMonthly} update={update} onReset={reset}
           onPreset={(startMonthly) => setParams((prev) => ({ ...prev, startMonthly }))} />
 
         <main className="content">
@@ -46,17 +46,36 @@ export function SimulatorPage() {
             </p>
             <ZoneLegend />
             <ProjectionChart rows={rows} />
+            <p className="chart-note">
+              <b>Cómo leerla.</b> La distancia entre la línea naranja (proyecto) y la gris punteada (ley vigente) es la
+              renta adicional que genera el proyecto cada año. La UVT, que define los tramos y los topes, se actualiza
+              con la inflación; si el salario crece más rápido, el ingreso sube de tramo y la renta crece más que el
+              salario. El fondo de {params.firstYear} incluye el salto por la pérdida de la exención de los gastos de
+              representación; los años siguientes reflejan solo la progresividad de la tabla.
+            </p>
             <DataTable rows={rows} />
           </section>
 
           <section className="card">
-            <h2>¿Desde qué aumento en {params.firstYear} deja de comerse el impuesto el aumento?</h2>
+            <h2>Punto de equilibrio del aumento salarial en el año de transición ({params.firstYear})</h2>
             <p className="sub">
               Al pasar de la ley vigente ({params.firstYear - 1}, salario de {fmtM(transition.baselineMonthly)} al mes)
               al proyecto ({params.firstYear}), se pierde la exención de los gastos de representación aunque el sueldo
               no suba. Por debajo del punto 1:1, el impuesto adicional es mayor que el aumento.
             </p>
             <TransitionChart transition={transition} selectedPct={params.transitionRaise} />
+            <p className="chart-note">
+              <b>Zona roja</b> (más de $1,10 por cada $1): al cambiar de ley, el impuesto sube un monto fijo por la
+              pérdida de la exención, aunque el sueldo no suba. Con un aumento pequeño, ese salto se reparte entre pocos
+              pesos y el impuesto adicional supera el aumento. <b>Zona verde</b> (menos de $0,90): con un aumento mayor,
+              el salto fijo se diluye y la curva baja hacia la tarifa marginal, de modo que queda ganancia neta. La franja
+              amarilla es el equilibrio.{' '}
+              {transition.breakevenPct === null
+                ? 'En este escenario ningún aumento hasta el 30 % alcanza el punto 1:1.'
+                : transition.breakevenPct === 0
+                  ? 'En este escenario cualquier aumento queda por debajo del punto 1:1.'
+                  : `En este escenario el punto 1:1 está en un aumento del ${fmtRaise(transition.breakevenPct)}.`}
+            </p>
           </section>
 
           <section className="card notes">
@@ -78,6 +97,12 @@ export function SimulatorPage() {
           </section>
         </main>
       </div>
+
+      <footer className="credits">
+        <span>Simulador desarrollado con agentes de IA</span>
+        <img src={`${import.meta.env.BASE_URL}lia-unal.png`} alt="Laboratorio de Inteligencia Artificial, UNAL"
+          width={64} height={64} />
+      </footer>
     </div>
   )
 }

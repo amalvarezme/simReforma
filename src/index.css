@@ -45,7 +45,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.01em; }
 .param-value { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .param-hint { font-size: 12px; color: var(--text-muted); }
 
-input[type='range'] { width: 100%; accent-color: var(--accent); height: 20px; cursor: pointer; }
+input[type='range'] { width: 100%; accent-color: var(--accent); height: 24px; cursor: pointer; }
 
 .presets { display: flex; flex-wrap: wrap; gap: 6px; }
 .preset, .segmented button {
@@ -58,8 +58,8 @@ input[type='range'] { width: 100%; accent-color: var(--accent); height: 20px; cu
 
 .toggle-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
 .segmented { display: flex; gap: 6px; }
-.check { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
-.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+.check { display: flex; gap: 8px; align-items: center; min-height: 32px; font-size: 14px; cursor: pointer; }
+.check input { flex: none; accent-color: var(--accent); width: 20px; height: 20px; margin: 0; }
 
 /* Content */
 .content { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
@@ -82,6 +82,14 @@ input[type='range'] { width: 100%; accent-color: var(--accent); height: 20px; cu
 .card h2 { font-size: 18px; }
 .sub { margin: 6px 0 12px; color: var(--text-secondary); font-size: 14px; }
 
+.axis-captions { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--text-secondary); }
+.axis-captions span:last-child { text-align: right; }
+
+.chart-key { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font-size: 13px; color: var(--text-secondary); }
+.key-line { flex: none; width: 18px; height: 2px; }
+
+.chart-note { margin: 12px 0 0; color: var(--text-secondary); font-size: 14px; }
+
 .zone-legend { list-style: none; padding: 0; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--text-secondary); }
 .zone-legend li { display: flex; align-items: center; gap: 6px; }
 .swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--border); display: inline-block; }
@@ -94,7 +102,7 @@ input[type='range'] { width: 100%; accent-color: var(--accent); height: 20px; cu
 .tooltip .t-bill { color: var(--text-primary); font-weight: 600; }
 
 .table-wrap { margin-top: 8px; }
-.table-wrap summary { cursor: pointer; font-size: 14px; color: var(--text-secondary); }
+.table-wrap summary { cursor: pointer; padding: 6px 0; font-size: 14px; color: var(--text-secondary); }
 .scroll { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; margin-top: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
 th, td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -104,3 +112,9 @@ th { color: var(--text-secondary); font-weight: 600; }
 .notes ul { margin: 10px 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 14px; }
 .notes li + li { margin-top: 6px; }
 .disclaimer { margin: 14px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--accent-soft); font-size: 13px; color: var(--text-secondary); }
+
+.credits {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  margin-top: 32px; font-size: 13px; color: var(--text-muted);
+}
+.credits img { display: block; width: 64px; height: 64px; }

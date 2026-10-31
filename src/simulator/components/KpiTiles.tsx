@@ -1,4 +1,4 @@
-import { fmtM, fmtPct, fmtPeso } from '../format'
+import { fmtM, fmtPct, fmtPeso, fmtRaise } from '../format'
 
 interface KpiTilesProps {
   firstYear: number
@@ -16,15 +16,18 @@ interface KpiTilesProps {
 }
 
 export function KpiTiles({ firstYear, years, summary: s, breakevenPct }: KpiTilesProps) {
+  const breakeven =
+    breakevenPct === 0
+      ? { value: 'Cualquiera', note: `con cualquier aumento en ${firstYear} el impuesto adicional es menor que el aumento` }
+      : {
+          value: breakevenPct === null ? '> 30 %' : fmtRaise(breakevenPct),
+          note: `aumento en ${firstYear} desde el que el impuesto adicional es menor que el aumento`,
+        }
   const tiles = [
     { label: `Renta en ${firstYear}`, value: fmtM(s.firstBill), note: `vs. ${fmtM(s.firstCurrent)} con la ley vigente` },
     { label: `Renta adicional en ${years} años`, value: `+${fmtM(s.extraTaxTotal)}`, note: `y +${fmtM(s.extraContribTotal)} en salud` },
     { label: `Impuesto por cada $1 de aumento en ${firstYear}`, value: fmtPeso(s.firstTaxPerPeso), note: 'año del cambio de ley' },
-    {
-      label: 'Aumento mínimo para no perder',
-      value: breakevenPct === null ? '> 30 %' : `${String(breakevenPct).replace('.', ',')} %`,
-      note: `aumento en ${firstYear} desde el que el impuesto adicional es menor que el aumento`,
-    },
+    { label: 'Aumento mínimo para no perder', ...breakeven },
     { label: 'Tasa efectiva al final', value: fmtPct(s.lastEffective), note: `vs. ${fmtPct(s.lastEffectiveCurrent)} con la ley vigente` },
   ]
   return (

@@ -78,6 +78,13 @@ describe('zoneOf', () => {
     expect(zoneOf(rows[1].taxPerPeso)).toBe('gain')
   })
 
+
+  it('reports 0 when any raise already stays below 1:1 (no tax to absorb it)', () => {
+    const result = transitionCurve({ ...noBenefits, startMonthly: 3 * M })
+    expect(result.points[0].taxPerPeso).toBe(0)
+    expect(result.breakevenPct).toBe(0)
+    expect(result.greenFromPct).toBe(0)
+  })
   it('classifies the equilibrium band between $0.90 and $1.10', () => {
     expect(zoneOf(0.89)).toBe('gain')
     expect(zoneOf(1)).toBe('balance')

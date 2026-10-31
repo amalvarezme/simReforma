@@ -231,7 +231,7 @@ export interface TransitionPoint {
 export interface TransitionResult {
   baselineMonthly: number
   points: TransitionPoint[]
-  /** Smallest raise (in %) at which the extra tax is below each peso of raise. */
+  /** Smallest raise (in %) at which the extra tax is below each peso of raise; 0 when any raise qualifies. */
   breakevenPct: number | null
   /** Below this raise the extra tax exceeds the raise by more than 10%. */
   redUntilPct: number | null
@@ -255,7 +255,12 @@ export function transitionCurve(p: Params, maxPct = 30, stepPct = 0.5): Transiti
       chargesPerPeso: (after.tax + after.contributions - before.tax - before.contributions) / raise,
     })
   }
-  const firstBelow = (limit: number) => points.find((pt) => pt.taxPerPeso < limit)?.pct ?? null
+  // 0 means any raise already stays below the limit (e.g. no tax at all on this salary).
+  const firstBelow = (limit: number) => {
+    const index = points.findIndex((pt) => pt.taxPerPeso < limit)
+    if (index === -1) return null
+    return index === 0 ? 0 : points[index].pct
+  }
   return {
     baselineMonthly: before.monthly,
     points,
