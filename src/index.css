@@ -43,6 +43,8 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.01em; }
 .param-head { display: flex; justify-content: space-between; gap: 8px; }
 .param-label { font-size: 14px; color: var(--text-primary); }
 .param-value { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.param.disabled .param-value { color: var(--text-secondary); }
+.param.disabled input[type='range'] { cursor: not-allowed; opacity: 0.55; }
 .param-hint { font-size: 12px; color: var(--text-muted); }
 
 input[type='range'] { width: 100%; accent-color: var(--accent); height: 24px; cursor: pointer; }
@@ -58,7 +60,7 @@ input[type='range'] { width: 100%; accent-color: var(--accent); height: 24px; cu
 
 .toggle-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
 .segmented { display: flex; gap: 6px; }
-.check { display: flex; gap: 8px; align-items: center; min-height: 32px; font-size: 14px; cursor: pointer; }
+.check { display: flex; gap: 8px; align-items: center; min-height: 32px; margin-bottom: 8px; font-size: 14px; cursor: pointer; }
 .check input { flex: none; accent-color: var(--accent); width: 20px; height: 20px; margin: 0; }
 
 /* Content */

@@ -9,7 +9,7 @@ import { fmtM, fmtRaise } from './format'
 import { useSimulation } from './useSimulation'
 
 export function SimulatorPage() {
-  const { params, update, setParams, reset, rows, transition, summary } = useSimulation(DEFAULT_PARAMS)
+  const { params, effective, update, setParams, reset, rows, transition, summary } = useSimulation(DEFAULT_PARAMS)
   const lastYear = rows[rows.length - 1].year
 
   return (
@@ -24,7 +24,7 @@ export function SimulatorPage() {
       </header>
 
       <div className="layout">
-        <ParamPanel params={params} baselineMonthly={transition.baselineMonthly} update={update} onReset={reset}
+        <ParamPanel params={effective} baselineMonthly={transition.baselineMonthly} update={update} onReset={reset}
           onPreset={(startMonthly) => setParams((prev) => ({ ...prev, startMonthly }))} />
 
         <main className="content">
@@ -63,7 +63,7 @@ export function SimulatorPage() {
               al proyecto ({params.firstYear}), se pierde la exención de los gastos de representación aunque el sueldo
               no suba. Por debajo del punto 1:1, el impuesto adicional es mayor que el aumento.
             </p>
-            <TransitionChart transition={transition} selectedPct={params.transitionRaise} />
+            <TransitionChart transition={transition} selectedPct={effective.transitionRaise} />
             <p className="chart-note">
               <b>Zona roja</b> (más de $1,10 por cada $1): al cambiar de ley, el impuesto sube un monto fijo por la
               pérdida de la exención, aunque el sueldo no suba. Con un aumento pequeño, ese salto se reparte entre pocos

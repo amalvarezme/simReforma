@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_PARAMS, project, simulateYear, transitionCurve, zoneOf, type Params } from './engine'
+import { DEFAULT_PARAMS, baselineYear, project, simulateYear, transitionCurve, zoneOf, type Params } from './engine'
 
 const M = 1e6
 // Reference model: 15% raises, independent of the base scenario defaults.
 const noBenefits: Params = {
   ...DEFAULT_PARAMS,
+  raisesFollowInflation: false,
   salaryGrowth: 0.15,
   transitionRaise: 0.15,
   dependents: 0,
@@ -18,6 +19,22 @@ describe('DEFAULT_PARAMS', () => {
   it('raises salaries by inflation (IPC) in the base scenario', () => {
     expect(DEFAULT_PARAMS.transitionRaise).toBe(DEFAULT_PARAMS.inflation)
     expect(DEFAULT_PARAMS.salaryGrowth).toBe(DEFAULT_PARAMS.inflation)
+    expect(DEFAULT_PARAMS.raisesFollowInflation).toBe(true)
+  })
+})
+
+describe('raisesFollowInflation', () => {
+  const linked: Params = { ...noBenefits, raisesFollowInflation: true, inflation: 0.08 }
+  const manual: Params = { ...noBenefits, raisesFollowInflation: false, inflation: 0.08, salaryGrowth: 0.08, transitionRaise: 0.08 }
+
+  it('uses inflation for both raises, ignoring the manual raise values', () => {
+    expect(project(linked)).toEqual(project(manual))
+    expect(transitionCurve(linked)).toEqual(transitionCurve(manual))
+    expect(baselineYear(linked)).toEqual(baselineYear(manual))
+  })
+
+  it('keeps the manual raises when switched off', () => {
+    expect(project({ ...linked, raisesFollowInflation: false })).toEqual(project({ ...manual, salaryGrowth: 0.15, transitionRaise: 0.15 }))
   })
 })
 

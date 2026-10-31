@@ -16,6 +16,8 @@ export interface Params {
   salaryGrowth: number
   /** Raise between the year before the reform and the first projected year. */
   transitionRaise: number
+  /** When true, both raises equal inflation (IPC) and the manual raise values are ignored. */
+  raisesFollowInflation: boolean
   /** Yearly growth of UVT and SMLMV. */
   inflation: number
   uvtBase: number
@@ -45,6 +47,7 @@ export const DEFAULT_PARAMS: Params = {
   years: 10,
   salaryGrowth: DEFAULT_INFLATION,
   transitionRaise: DEFAULT_INFLATION,
+  raisesFollowInflation: true,
   inflation: DEFAULT_INFLATION,
   uvtBase: 52_374,
   smlmvBase: 1_750_905,
@@ -198,12 +201,19 @@ export interface ProjectionRow {
   chargesPerPeso: number
 }
 
+/** Params with the raises the simulation actually uses: inflation when raisesFollowInflation is on. */
+export function resolveRaises(p: Params): Params {
+  return p.raisesFollowInflation ? { ...p, transitionRaise: p.inflation, salaryGrowth: p.inflation } : p
+}
+
 /** Salary in the year before the projection, under the current law. */
-export function baselineYear(p: Params): YearResult {
+export function baselineYear(input: Params): YearResult {
+  const p = resolveRaises(input)
   return simulateYear(p.startMonthly / (1 + p.transitionRaise), p.firstYear - 1, 'current', p)
 }
 
-export function project(p: Params): ProjectionRow[] {
+export function project(input: Params): ProjectionRow[] {
+  const p = resolveRaises(input)
   const rows: ProjectionRow[] = []
   let previous = baselineYear(p)
   for (let i = 0; i < p.years; i++) {
@@ -245,7 +255,8 @@ export interface TransitionResult {
 export const ZONE_LIMITS = { gain: 0.9, loss: 1.1 } as const
 
 /** Tax per peso of raise when moving from the current law to the bill, by size of the transition raise. */
-export function transitionCurve(p: Params, maxPct = 30, stepPct = 0.5): TransitionResult {
+export function transitionCurve(input: Params, maxPct = 30, stepPct = 0.5): TransitionResult {
+  const p = resolveRaises(input)
   const before = baselineYear(p)
   const points: TransitionPoint[] = []
   for (let tenth = stepPct * 10; tenth <= maxPct * 10; tenth += stepPct * 10) {

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
-import { DEFAULT_PARAMS, project, transitionCurve, type Params } from '../tax/engine'
+import { DEFAULT_PARAMS, project, resolveRaises, transitionCurve, type Params } from '../tax/engine'
 
 export function useSimulation(initial: Params = DEFAULT_PARAMS) {
   const [params, setParams] = useState<Params>(initial)
 
+  // Params as simulated: raises replaced by inflation when they follow the IPC.
+  const effective = useMemo(() => resolveRaises(params), [params])
   const rows = useMemo(() => project(params), [params])
   const transition = useMemo(() => transitionCurve(params), [params])
 
@@ -26,5 +28,5 @@ export function useSimulation(initial: Params = DEFAULT_PARAMS) {
   const update = <K extends keyof Params>(key: K, value: Params[K]) => setParams((prev) => ({ ...prev, [key]: value }))
   const reset = () => setParams(initial)
 
-  return { params, update, setParams, reset, rows, transition, summary }
+  return { params, effective, update, setParams, reset, rows, transition, summary }
 }

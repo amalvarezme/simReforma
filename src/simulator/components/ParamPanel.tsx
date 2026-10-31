@@ -2,6 +2,7 @@ import type { Params } from '../../tax/engine'
 import { ParamSlider } from './ParamSlider'
 
 interface ParamPanelProps {
+  /** Params as simulated (raises already resolved to inflation when they follow the IPC). */
   params: Params
   /** Previous-year salary under the current law, derived from the start salary and the transition raise. */
   baselineMonthly: number
@@ -41,12 +42,26 @@ export function ParamPanel({ params: p, baselineMonthly, update, onPreset, onRes
         <ParamSlider label="Salario mensual inicial" value={p.startMonthly} min={3e6} max={60e6} step={0.5e6}
           format={money} hint="Asignación básica + gastos de representación"
           onChange={(v) => update('startMonthly', v)} />
+        <label className="check">
+          <input type="checkbox" role="switch" checked={p.raisesFollowInflation}
+            onChange={(e) => {
+              // Unlinking keeps the sliders at the current inflation instead of jumping to older manual values.
+              if (!e.target.checked) {
+                update('transitionRaise', p.transitionRaise)
+                update('salaryGrowth', p.salaryGrowth)
+              }
+              update('raisesFollowInflation', e.target.checked)
+            }} />
+          Aumentos según IPC (iguales a la inflación)
+        </label>
         <ParamSlider label={`Aumento en ${p.firstYear} (año de transición)`} value={p.transitionRaise} min={0} max={0.25}
-          step={0.005} format={pct}
+          step={0.005} format={pct} disabled={p.raisesFollowInflation}
           hint={`Fija el salario de ${p.firstYear - 1} (ley vigente) en ${money(baselineMonthly)}: salario inicial ÷ (1 + aumento). Por eso la curva del punto de equilibrio se recalcula al moverlo`}
           onChange={(v) => update('transitionRaise', v)} />
         <ParamSlider label="Aumento salarial anual" value={p.salaryGrowth} min={0} max={0.25} step={0.005}
-          format={pct} hint="Escenario base: igual a la inflación (IPC)" onChange={(v) => update('salaryGrowth', v)} />
+          format={pct} disabled={p.raisesFollowInflation}
+          hint={p.raisesFollowInflation ? 'Sigue la inflación (IPC). Desactive "Aumentos según IPC" para cambiarlo' : undefined}
+          onChange={(v) => update('salaryGrowth', v)} />
         <ParamSlider label="Años proyectados" value={p.years} min={3} max={20} step={1}
           format={(v) => `${v} años`} onChange={(v) => update('years', v)} />
       </section>
