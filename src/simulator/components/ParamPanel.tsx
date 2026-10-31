@@ -13,7 +13,7 @@ interface ParamPanelProps {
 
 const pct = (v: number) => `${(v * 100).toLocaleString('es-CO', { maximumFractionDigits: 1 })} %`
 const money = (v: number) => `$${(v / 1e6).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M`
-const PRESETS = [10e6, 20e6, 30e6]
+const PRESETS = [10e6, 20e6, 30e6, 40e6, 50e6, 60e6]
 
 export function ParamPanel({ params: p, baselineMonthly, update, onPreset, onReset }: ParamPanelProps) {
   return (
