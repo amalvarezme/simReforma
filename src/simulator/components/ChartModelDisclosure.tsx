@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { MathView } from './MathView'
 
 export interface ChartModelDisclosureProps {
   type: 'projection' | 'transition'
@@ -29,7 +30,7 @@ export function ChartModelDisclosure({ type }: ChartModelDisclosureProps) {
               ? 'Ver modelo matemático y suposiciones de esta proyección'
               : 'Ver modelo matemático y suposiciones del punto de equilibrio'}
         </span>
-        <span className="disclosure-btn-badge">Fórmulas y metodología</span>
+        <span className="disclosure-btn-badge">Fórmulas compiladas</span>
       </button>
 
       {isOpen && (
@@ -47,86 +48,106 @@ function ProjectionModelContent() {
       <section className="disclosure-section">
         <h3>📐 Modelo Matemático de la Proyección (Multianual)</h3>
         <p className="disclosure-intro">
-          Para cada año $t$ del horizonte simulado ($t \in [t_0, t_0 + n - 1]$), la simulación calcula el ingreso,
-          la base gravable y el impuesto comparando el Proyecto de Ley con la Ley Vigente:
+          Para cada año <MathView math="t" /> del horizonte simulado (<MathView math="t \in [t_0, t_0 + n - 1]" />), la
+          simulación calcula el ingreso, la base gravable y el impuesto comparando el Proyecto de Ley frente a la Ley
+          Vigente:
         </p>
 
         <div className="math-step">
           <h4>1. Indexación macroeconómica y salario mensual</h4>
           <p>
-            Sea $k = t - 2026$ el número de periodos transcurridos desde el año base (2026) y $\pi$ la tasa de
-            inflación esperada:
+            Sea <MathView math="k = t - 2026" /> el número de periodos transcurridos desde el año base (2026) y{' '}
+            <MathView math="\pi" /> la tasa de inflación esperada:
           </p>
-          <div className="math-block">
-            <code>UVT(t) = UVT_base × (1 + π)^k</code>
-            <code>SMLMV(t) = SMLMV_base × (1 + π)^k</code>
-            <code>S_mensual(t) = S_inicio × (1 + g)^(t - t_0)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{UVT}_t &= \\text{UVT}_{2026} \\cdot (1 + \\pi)^k \\\\[4pt]
+\\text{SMLMV}_t &= \\text{SMLMV}_{2026} \\cdot (1 + \\pi)^k \\\\[4pt]
+S_t &= S_0 \\cdot (1 + g)^{t - t_0}
+\\end{aligned}`}
+          />
           <p className="math-note">
-            Donde $g$ es la tasa anual de crecimiento salarial ($g = \pi$ cuando los aumentos siguen la inflación).
+            Donde <MathView math="g" /> es la tasa anual de crecimiento salarial (<MathView math="g = \pi" /> cuando los
+            aumentos siguen la inflación).
           </p>
         </div>
 
         <div className="math-step">
-          <h4>2. Ingreso bruto anual ($Gross$)</h4>
+          <h4>2. Ingreso bruto anual (<MathView math="\text{Gross}_t" />)</h4>
           <p>
-            El ingreso bruto comprende 12 mensualidades más las prestaciones sociales (α_prest = 46.37 %) y
-            las cesantías anualizadas (α_ces = 10.57 %):
+            El ingreso bruto comprende 12 mensualidades más las prestaciones sociales (<MathView math="\alpha_{\text{prest}} = 46.37\%" />) y
+            las cesantías anualizadas consignadas (<MathView math="\alpha_{\text{ces}} = 10.57\%" />):
           </p>
-          <div className="math-block">
-            <code>Base12 = 12 × S_mensual(t)</code>
-            <code>Gross(t) = Base12 × (1 + α_prest + α_ces)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{Base}_{12} &= 12 \\cdot S_t \\\\[4pt]
+\\text{Gross}_t &= \\text{Base}_{12} \\cdot (1 + \\alpha_{\\text{prest}} + \\alpha_{\\text{ces}})
+\\end{aligned}`}
+          />
         </div>
 
         <div className="math-step">
           <h4>3. Aportes a seguridad social (INCR - arts. 55 y 56 ET)</h4>
           <p>
-            El Ingreso Base de Cotización tiene tope legal de 25 SMLMV: $IBC = \min(S_mensual, 25 \times SMLMV)$.
+            El Ingreso Base de Cotización tiene tope legal de 25 SMLMV:{' '}
+            <MathView math="\text{IBC}_t = \min(S_t, \; 25 \\cdot \\text{SMLMV}_t)" />.
           </p>
-          <div className="math-block">
-            <code>Aportes(t) = 12 × IBC × [ r_salud(t) + 0.04(pensión) + r_solidaridad(IBC) ]</code>
-            <code>IngresoNeto(t) = Gross(t) - Aportes(t)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{Aportes}_t &= 12 \\cdot \\text{IBC}_t \\cdot \\Big[ r_{\\text{salud}}(t) + 0.04_{\\text{pensión}} + r_{\\text{solidaridad}}(\\text{IBC}_t) \\Big] \\\\[4pt]
+\\text{Neto}_t &= \\text{Gross}_t - \\text{Aportes}_t
+\\end{aligned}`}
+          />
           <p className="math-note">
-            En el proyecto (art. 21, desde 2027), la salud en régimen especial sube a 5.5 % (IBC de 2 a 3 SMLMV) o
-            6.5 % (&gt; 3 SMLMV), frente al 4 % de la ley vigente.
+            En el proyecto (art. 21, desde 2027), la cotización a salud en régimen especial sube a 5.5 % (si IBC está
+            entre 2 y 3 SMLMV) o 6.5 % (si supera 3 SMLMV), frente al 4 % de la ley vigente.
           </p>
         </div>
 
         <div className="math-step">
-          <h4>4. Deducciones y rentas exentas (art. 336 ET)</h4>
+          <h4>4. Depuración de la Cédula General y Topes Legales (art. 336 ET)</h4>
           <p>
-            <b>Dentro del tope conjunto:</b> dependientes (art. 387: min[10% Gross, 384 UVT]), intereses de
-            vivienda (art. 119: ≤ 1.200 UVT), medicina prepagada (art. 387: ≤ 192 UVT), ahorro
-            voluntario/AFC (arts. 126-1 y 126-4) y el 25 % exento laboral (art. 206 num. 10):
+            <b>Beneficios dentro del tope conjunto:</b> dependientes (art. 387: <MathView math="\min[0.10 \\cdot \\text{Gross}, 384\\text{ UVT}]" />),
+            intereses de vivienda (art. 119: <MathView math="\le 1.200\\text{ UVT}" />), medicina prepagada (art. 387: <MathView math="\le 192\\text{ UVT}" />),
+            ahorro voluntario FPV/AFC (arts. 126-1, 126-4) y el 25 % exento laboral (art. 206 num. 10):
           </p>
-          <div className="math-block">
-            <code>Exenta25 = min(0.25 × max(0, Neto - Deducciones - OtrasExentas), Tope25 × UVT)</code>
-            <code>TopeGlobal = min(0.40 × IngresoNeto, TopeGlobal_UVT × UVT)</code>
-            <code>DentroTope = min(Deducciones + OtrasExentas + Exenta25, TopeGlobal)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{Exenta}_{25\\%} &= \\min\\Big(0.25 \\cdot \\max(0, \\text{Neto}_t - \\text{Ded} - \\text{Exentas}), \\; \\text{Tope}_{25} \\cdot \\text{UVT}_t\\Big) \\\\[6pt]
+\\text{Tope}_{\\text{global}} &= \\min\\Big(0.40 \\cdot \\text{Neto}_t, \\; \\text{Tope}_{\\text{UVT}} \\cdot \\text{UVT}_t\\Big) \\\\[6pt]
+\\text{Dentro} &= \\min\\Big(\\text{Deducciones} + \\text{Exentas} + \\text{Exenta}_{25\\%}, \\; \\text{Tope}_{\\text{global}}\\Big)
+\\end{aligned}`}
+          />
           <p className="math-note">
-            El proyecto reduce <code>TopeGlobal_UVT</code> de 1.340 a 1.180 UVT (art. 49) y <code>Tope25</code> de 790
-            a 630 UVT (art. 47).
+            El proyecto reduce <MathView math="\\text{Tope}_{\\text{UVT}}" /> de 1.340 a 1.180 UVT (art. 49) y{' '}
+            <MathView math="\\text{Tope}_{25}" /> de 790 a 630 UVT (art. 47).
           </p>
           <p>
-            <b>Fuera del tope:</b>
+            <b>Beneficios fuera del tope conjunto:</b>
           </p>
-          <div className="math-block">
-            <code>GastosRepresentacion = LeyVigente ? (0.50 × Base12 × share_basico) : 0</code>
-            <code>Dependientes72 = LeyVigente ? (72 UVT × min(dependientes, 4)) : 0</code>
-            <code>FueraTope = GastosRepresentacion + Dependientes72</code>
-          </div>
+          <MathView
+            block
+            math={`\\text{Fuera} = \\begin{cases} 
+0.50 \\cdot \\text{Base}_{12} \\cdot \\text{share}_{\\text{básico}} + 72\\,\\text{UVT} \\cdot \\min(\\text{dep}, 4) & \\text{(Ley vigente)} \\\\[4pt]
+0 & \\text{(Proyecto de Ley)} 
+\\end{cases}`}
+          />
         </div>
 
         <div className="math-step">
           <h4>5. Base gravable, impuesto y tasa marginal interanual</h4>
-          <div className="math-block">
-            <code>RentaGravable(t) = max(0, IngresoNeto - DentroTope - FueraTope)</code>
-            <code>Impuesto(t) = Tarifa_Art241( RentaGravable / UVT ) × UVT</code>
-            <code>ImpuestoPorPeso(t) = [ Impuesto(t) - Impuesto(t-1) ] / [ Gross(t) - Gross(t-1) ]</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{RentaLiquida}_t &= \\max(0, \\; \\text{Neto}_t - \\text{Dentro} - \\text{Fuera}) \\\\[6pt]
+\\text{Impuesto}_t &= \\text{Tarifa}_{\\text{art. } 241}\\!\\left( \\frac{\\text{RentaLiquida}_t}{\\text{UVT}_t} \\right) \\cdot \\text{UVT}_t \\\\[6pt]
+\\text{ImpuestoPorPeso}_t &= \\frac{\\text{Impuesto}_t - \\text{Impuesto}_{t-1}}{\\text{Gross}_t - \\text{Gross}_{t-1}}
+\\end{aligned}`}
+          />
         </div>
       </section>
 
@@ -144,8 +165,8 @@ function ProjectionModelContent() {
           </li>
           <li>
             <b>Derogatoria de gastos de representación:</b> El art. 106 num. 1 del proyecto deroga el numeral 9 del art.
-            206 del ET. Esto genera que en el primer año proyectado (2027) el 100 % de los gastos
-            de representación pase a ser gravable dentro de la cédula general.
+            206 del ET. Esto genera que en el primer año gravable (2027) el 100 % de los gastos de representación pase a
+            ser gravable dentro de la cédula general.
           </li>
           <li>
             <b>Prestaciones y cesantías anuales:</b> Primas proporcionales al 46.37 % del sueldo básico anual y cesantías
@@ -176,69 +197,85 @@ function TransitionModelContent() {
       <section className="disclosure-section">
         <h3>📐 Modelo Matemático del Punto de Equilibrio (Transición 2026 → 2027)</h3>
         <p className="disclosure-intro">
-          Esta curva evalúa la sensibilidad del impuesto adicional ante variaciones del aumento salarial ($p \in [0.5\%,
-          30\%]$) al cruzar de la ley vigente previa al primer año de la reforma:
+          Esta curva evalúa la respuesta del impuesto adicional ante variaciones paramétricas del aumento salarial (
+          <MathView math="p \in [0.5\%, 30\%]" />) al transitar de la ley vigente previa al primer año de la reforma:
         </p>
 
         <div className="math-step">
           <h4>1. Línea base previa (2026, Ley Vigente)</h4>
           <p>
-            A partir del salario inicial proyectado $S_{2027}$ y el aumento de transición asumido r_trans:
+            A partir del salario inicial proyectado <MathView math="S_{2027}" /> y el aumento de transición asumido{' '}
+            <MathView math="r_{\\text{trans}}" />:
           </p>
-          <div className="math-block">
-            <code>S_2026 = S_2027 / (1 + r_trans)</code>
-            <code>Gross_2026 = 12 × S_2026 × (1 + α_prest + α_ces)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+S_{2026} &= \\frac{S_{2027}}{1 + r_{\\text{trans}}} \\\\[6pt]
+\\text{Gross}_{2026} &= 12 \\cdot S_{2026} \\cdot (1 + \\alpha_{\\text{prest}} + \\alpha_{\\text{ces}})
+\\end{aligned}`}
+          />
           <p className="math-note">
             Se liquida el año 2026 con UVT 2026 ($52.374), exención del 50 % de gastos de representación, tope de 1.340
-            UVT y tabla del art. 241 vigente, obteniendo <code>Impuesto_vigente(2026)</code> y <code>Aportes_vigente(2026)</code>.
+            UVT y tabla del art. 241 vigente, obteniendo <MathView math="\\text{Impuesto}_{\\text{vigente}}(2026)" /> y{' '}
+            <MathView math="\\text{Aportes}_{\\text{vigente}}(2026)" />.
           </p>
         </div>
 
         <div className="math-step">
-          <h4>2. Evaluación paramétrica del aumento ($p \in [0.5\%, 30\%]$)</h4>
+          <h4>2. Evaluación paramétrica del aumento (<MathView math="p \in [0.5\%, 30\%]" />)</h4>
           <p>Para cada porcentaje de aumento salarial evaluado en pasos de 0.5 %:</p>
-          <div className="math-block">
-            <code>S_2027(p) = S_2026 × (1 + p)</code>
-            <code>Gross_2027(p) = 12 × S_2027(p) × (1 + α_prest + α_ces)</code>
-            <code>ΔGross(p) = Gross_2027(p) - Gross_2026 &gt; 0</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+S_{2027}(p) &= S_{2026} \\cdot (1 + p) \\\\[4pt]
+\\text{Gross}_{2027}(p) &= 12 \\cdot S_{2027}(p) \\cdot (1 + \\alpha_{\\text{prest}} + \\alpha_{\\text{ces}}) \\\\[4pt]
+\\Delta \\text{Gross}(p) &= \\text{Gross}_{2027}(p) - \\text{Gross}_{2026} > 0
+\\end{aligned}`}
+          />
           <p className="math-note">
             Se liquida el año 2027 con las reglas del Proyecto de Ley (sin exención de gastos de representación, nuevo
-            tope de 1.180 UVT y nueva tabla de tarifas), obteniendo <code>Impuesto_proyecto(2027, p)</code>.
+            tope de 1.180 UVT y nueva tabla de tarifas), obteniendo <MathView math="\\text{Impuesto}_{\\text{proyecto}}(2027, p)" />.
           </p>
         </div>
 
         <div className="math-step">
           <h4>3. Razón marginal tributaria e impuesto por cada peso</h4>
-          <div className="math-block">
-            <code>ImpuestoPorPeso(p) = [ Impuesto_proyecto(2027, p) - Impuesto_vigente(2026) ] / ΔGross(p)</code>
-            <code>CargasPorPeso(p) = [ (Impuesto_2027 + Aportes_2027) - (Impuesto_2026 + Aportes_2026) ] / ΔGross(p)</code>
-          </div>
+          <MathView
+            block
+            math={`\\begin{aligned}
+\\text{ImpuestoPorPeso}(p) &= \\frac{\\text{Impuesto}_{\\text{proyecto}}(2027, p) - \\text{Impuesto}_{\\text{vigente}}(2026)}{\\Delta \\text{Gross}(p)} \\\\[8pt]
+\\text{CargasPorPeso}(p) &= \\frac{(\\text{Impuesto}_{2027} + \\text{Aportes}_{2027}) - (\\text{Impuesto}_{2026} + \\text{Aportes}_{2026})}{\\Delta \\text{Gross}(p)}
+\\end{aligned}`}
+          />
         </div>
 
         <div className="math-step">
-          <h4>4. Ecuación del punto de equilibrio 1:1 ($p^*$)</h4>
+          <h4>4. Ecuación del punto de equilibrio 1:1 (<MathView math="p^*" />)</h4>
           <p>
             El punto de equilibrio es el porcentaje mínimo de aumento donde el incremento del impuesto iguala
             exactamente al incremento del ingreso bruto:
           </p>
-          <div className="math-block">
-            <code>{'p* = min { p ∈ (0, 30%] | ImpuestoPorPeso(p) ≤ 1.00 }'}</code>
-          </div>
+          <MathView
+            block
+            math={`p^* = \\min \\left\\{ p \\in (0, 30\\%] \\;\\middle|\\; \\text{ImpuestoPorPeso}(p) \\le 1.00 \\right\\}`}
+          />
           <p className="math-note">
-            Si el aumento $p &lt; p^*$, el impuesto adicional supera el aumento del salario ($\Delta Impuesto &gt;
-            \Delta Gross$), haciendo que el ingreso disponible neto disminuya respecto al año anterior.
+            Si el aumento <MathView math="p < p^*" />, el impuesto adicional supera el aumento del salario (
+            <MathView math="\\Delta\\text{Impuesto} > \\Delta\\text{Gross}" />), haciendo que el ingreso disponible neto
+            disminuya respecto al año anterior.
           </p>
         </div>
 
         <div className="math-step">
           <h4>5. Clasificación de zonas de impacto</h4>
-          <div className="math-block">
-            <code>Zona Roja (Pérdida neta): ImpuestoPorPeso &gt; $1.10</code>
-            <code>Franja Amarilla (Equilibrio): $0.90 ≤ ImpuestoPorPeso ≤ $1.10</code>
-            <code>Zona Verde (Ganancia neta): ImpuestoPorPeso &lt; $0.90</code>
-          </div>
+          <MathView
+            block
+            math={`\\text{Zona}(p) = \\begin{cases}
+\\text{Roja (Pérdida neta)}, & \\text{ImpuestoPorPeso}(p) > 1.10 \\\\[4pt]
+\\text{Amarilla (Equilibrio)}, & 0.90 \\le \\text{ImpuestoPorPeso}(p) \\le 1.10 \\\\[4pt]
+\\text{Verde (Ganancia neta)}, & \\text{ImpuestoPorPeso}(p) < 0.90
+\\end{cases}`}
+          />
         </div>
       </section>
 

@@ -257,6 +257,23 @@ th { color: var(--text-secondary); font-weight: 600; }
   white-space: pre-wrap;
   word-break: break-word;
 }
+.katex-display-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 12px 14px;
+  margin: 8px 0;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+.katex-display-wrapper .katex-display {
+  margin: 2px 0;
+}
+.katex-inline-wrapper {
+  display: inline-block;
+  vertical-align: baseline;
+}
 .math-note {
   font-size: 12px;
   color: var(--text-muted);
