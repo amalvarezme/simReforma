@@ -18,6 +18,7 @@ dist-ssr
 .idea
 .DS_Store
 .atl
+*.docx
 *.suo
 *.ntvs*
 *.njsproj
