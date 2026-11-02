@@ -123,3 +123,157 @@ th { color: var(--text-secondary); font-weight: 600; }
 .credits a { color: var(--accent); text-decoration: none; }
 .credits a:hover { text-decoration: underline; }
 .credits img { display: block; width: 64px; height: 64px; }
+
+/* Collapsible math model and assumptions disclosure */
+.chart-disclosure {
+  margin: 16px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+.chart-disclosure:focus-within {
+  border-color: var(--accent);
+}
+.disclosure-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.15s ease;
+}
+.disclosure-btn:hover {
+  background: var(--accent-soft);
+}
+.disclosure-btn.active {
+  background: rgba(42, 120, 214, 0.05);
+  border-bottom: 1px solid var(--border);
+}
+.disclosure-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--accent);
+  font-weight: 700;
+  user-select: none;
+}
+.disclosure-btn-title {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.disclosure-btn-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .disclosure-btn-badge {
+    display: none;
+  }
+}
+.disclosure-panel {
+  padding: 18px 20px;
+  background: var(--surface-1);
+}
+.disclosure-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.disclosure-section h3 {
+  font-size: 15px;
+  font-weight: 650;
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.disclosure-intro {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.math-step {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.math-step:last-child {
+  margin-bottom: 0;
+}
+.math-step h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.math-step p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.math-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 6px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  color: #1a1918;
+  line-height: 1.5;
+}
+.math-block code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.math-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+  font-style: italic;
+  line-height: 1.4;
+}
+.assumptions-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.assumptions-list li + li {
+  margin-top: 10px;
+}
+.assumptions-list b {
+  color: var(--text-primary);
+}

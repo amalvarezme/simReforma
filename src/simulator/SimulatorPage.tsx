@@ -1,4 +1,5 @@
 import { DEFAULT_PARAMS } from '../tax/engine'
+import { ChartModelDisclosure } from './components/ChartModelDisclosure'
 import { DataTable } from './components/DataTable'
 import { KpiTiles } from './components/KpiTiles'
 import { ParamPanel } from './components/ParamPanel'
@@ -53,6 +54,7 @@ export function SimulatorPage() {
               salario. El fondo de {params.firstYear} incluye el salto por la pérdida de la exención de los gastos de
               representación; los años siguientes reflejan solo la progresividad de la tabla.
             </p>
+            <ChartModelDisclosure type="projection" />
             <DataTable rows={rows} />
           </section>
 
@@ -76,6 +78,7 @@ export function SimulatorPage() {
                   ? 'En este escenario cualquier aumento queda por debajo del punto 1:1.'
                   : `En este escenario el punto 1:1 está en un aumento del ${fmtRaise(transition.breakevenPct)}.`}
             </p>
+            <ChartModelDisclosure type="transition" />
           </section>
 
           <section className="card notes">
